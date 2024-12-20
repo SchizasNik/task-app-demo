@@ -1,0 +1,1227 @@
+swagger: '2.0'
+info:
+  description: This is an API defined for the interview test.
+  version: 1.0.0
+  title: Swagger for time management system app
+  contact:
+    email: schizasnik@gmail.com
+schemes:
+  - http
+paths:
+  /users:
+    post:
+      tags:
+        - users
+      summary: Create a new user
+      description: ''
+      operationId: addUser
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: User object that needs to be created
+          required: true
+          schema:
+            type: object
+            required:
+              - username
+              - password
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+              token:
+                type: string
+      responses:
+        '201':
+          description: Successful user creation
+          schema:
+            type: object
+            required:
+              - token
+              - user
+            properties:
+              token:
+                type: string
+              user:
+                type: object
+                required:
+                  - id
+                  - username
+                  - role
+                properties:
+                  id:
+                    type: string
+                  username:
+                    type: string
+                  role:
+                    type: string
+        '400':
+          description: Bad request
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - 'Missing field {field_name}'
+                  - 'Wrong field type {field_name}'
+        '401':
+          description: Unauthorized
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Token has expired
+        '403':
+          description: Forbidden
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Username already used
+                  - Invalid invitation id
+                  - Invitation has expired
+        '404':
+          description: Page not found
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Page not found
+        '500':
+          description: Internal server error
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Internal server error
+  /users/list:
+    get:
+      tags:
+        - users
+      summary: List users
+      description: Returns a list of users
+      operationId: listUsers
+      produces:
+        - application/json
+      parameters:
+        - name: limit
+          in: query
+          description: How many users will be returned
+          required: true
+          type: integer
+        - name: offset
+          in: query
+          description: How many users will be skipped
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Successful users fetch
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Users'
+        '400':
+          description: Bad request
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - 'Missing field {field_name}'
+                  - 'Wrong field type {field_name}'
+        '401':
+          description: Unauthorized
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Token has expired
+        '403':
+          description: Forbidden
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - User has no list permission
+        '404':
+          description: Page not found
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Page not found
+        '500':
+          description: Internal server error
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Internal server error
+  '/users/{id}/preferences':
+    put:
+      tags:
+        - users
+      summary: Update user preferences
+      description: ''
+      operationId: updateUserPreferences
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: id of user to update
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Preferred working hours per day to be updated
+          required: true
+          schema:
+            type: string
+            required:
+              - preferredWorkingHoursPerDay
+              - workingHoursEnabled
+            properties:
+              preferredWorkingHoursPerDay:
+                type: integer
+              workingHoursEnabled:
+                type: boolean
+      responses:
+        '200':
+          description: Successful user preferences update
+          schema:
+            $ref: '#/definitions/Users'
+        '400':
+          description: Bad request
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - 'Missing field {field_name}'
+                  - 'Wrong field type {field_name}'
+        '401':
+          description: Unauthorized
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Token has expired
+        '403':
+          description: Forbidden
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - User has no update permission
+        '404':
+          description: Page not found
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Page not found
+        '500':
+          description: Internal server error
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Internal server error
+  '/users/{id}/role':
+    put:
+      tags:
+        - users
+      summary: Update user role
+      description: ''
+      operationId: updateUserRole
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: id of user to update
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: User role to be updated
+          required: true
+          schema:
+            type: string
+            required:
+              - role
+            properties:
+              role:
+                type: string
+                enum:
+                  - user
+                  - manager
+                  - admin
+      responses:
+        '200':
+          description: Successful user preferences update
+          schema:
+            type: object
+            required:
+              - user
+            properties:
+              user:
+                type: object
+                required:
+                  - id
+                  - username
+                  - role
+                properties:
+                  id:
+                    type: string
+                  username:
+                    type: string
+                  role:
+                    type: string
+        '400':
+          description: Bad request
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - 'Missing field {field_name}'
+                  - 'Wrong field type {field_name}'
+        '401':
+          description: Unauthorized
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Token has expired
+        '403':
+          description: Forbidden
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - User has no update permission
+        '404':
+          description: Page not found
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Page not found
+        '500':
+          description: Internal server error
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Internal server error
+  '/users/{id}':
+    delete:
+      tags:
+        - users
+      summary: Delete user
+      description: ''
+      operationId: deleteUser
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: id of user to delete
+          required: true
+          type: string
+      responses:
+        '204':
+          description: Successful user deletion
+        '400':
+          description: Bad request
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - 'Missing field {field_name}'
+                  - 'Wrong field type {field_name}'
+        '401':
+          description: Unauthorized
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Token has expired
+        '403':
+          description: Forbidden
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - User has no permission
+        '404':
+          description: Page not found
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Page not found
+        '500':
+          description: Internal server error
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Internal server error
+  '/sessions/users/{id}':
+    delete:
+      tags:
+        - sessions
+      summary: Logout user
+      description: ''
+      operationId: logoutUser
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: id of user to delete
+          required: true
+          type: string
+      responses:
+        '204':
+          description: Successful user logout
+        '400':
+          description: Bad request
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - 'Missing field {field_name}'
+                  - 'Wrong field type {field_name}'
+        '401':
+          description: Unauthorized
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Token has expired
+        '403':
+          description: Forbidden
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - User has no permission
+        '404':
+          description: Page not found
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Page not found
+        '500':
+          description: Internal server error
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Internal server error
+  /sessions:
+    post:
+      tags:
+        - sessions
+      summary: Login user
+      description: ''
+      operationId: loginUser
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: User credentials
+          required: true
+          schema:
+            type: object
+            required:
+              - username
+              - password
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+      responses:
+        '201':
+          description: Successful login
+          schema:
+            type: object
+            required:
+              - token
+              - user
+            properties:
+              token:
+                type: string
+              user:
+                type: object
+                required:
+                  - id
+                  - username
+                  - role
+                properties:
+                  id:
+                    type: string
+                  username:
+                    type: string
+                  role:
+                    type: string
+        '400':
+          description: Bad request
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - 'Missing field {field_name}'
+                  - 'Wrong field type {field_name}'
+        '401':
+          description: Unauthorized
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Token has expired
+        '403':
+          description: Forbidden
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Incorrect password
+        '404':
+          description: Page not found
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Page not found
+        '500':
+          description: Internal server error
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Internal server error
+  '/users/{id}/records':
+    post:
+      tags:
+        - records
+      summary: Create a new record
+      description: ''
+      operationId: addRecord
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: id of user to add record
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Record object that needs to be created
+          required: true
+          schema:
+            $ref: '#/definitions/Records'
+      responses:
+        '201':
+          description: Successful record creation
+          schema:
+            $ref: '#/definitions/Records'
+        '400':
+          description: Bad request
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - 'Missing field {field_name}'
+                  - 'Wrong field type {field_name}'
+        '401':
+          description: Unauthorized
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Token has expired
+        '403':
+          description: Forbidden
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - User has no permission to create records
+        '404':
+          description: Page not found
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Page not found
+        '500':
+          description: Internal server error
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Internal server error
+  /records/list:
+    get:
+      tags:
+        - records
+      summary: List records
+      description: Returns a list of records
+      operationId: listRecords
+      produces:
+        - application/json
+      parameters:
+        - name: limit
+          in: query
+          description: How many records will be returned
+          required: true
+          type: integer
+        - name: offset
+          in: query
+          description: How many records will be skipped
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Successful records fetch
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Records'
+        '400':
+          description: Bad request
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - 'Missing field {field_name}'
+                  - 'Wrong field type {field_name}'
+        '401':
+          description: Unauthorized
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Token has expired
+        '403':
+          description: Forbidden
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Record has no list permission
+        '404':
+          description: Page not found
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Page not found
+        '500':
+          description: Internal server error
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Internal server error
+  '/users/{id}/records/{rid}/properties':
+    put:
+      tags:
+        - records
+      summary: Update record properties
+      description: ''
+      operationId: updateRecordProperties
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: id of user to update
+          required: true
+          type: string
+        - name: rid
+          in: path
+          description: id of record to update
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Records' properties to be updated
+          required: true
+          schema:
+            type: object
+            required:
+              - date
+              - duration
+              - note
+            properties:
+              date:
+                type: string
+                format: date-time
+              duration:
+                type: integer
+              note:
+                type: string
+      responses:
+        '200':
+          description: Successful record properties update
+          schema:
+            $ref: '#/definitions/Records'
+        '400':
+          description: Bad request
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - 'Missing field {field_name}'
+                  - 'Wrong field type {field_name}'
+        '401':
+          description: Unauthorized
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Token has expired
+        '403':
+          description: Forbidden
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - User has no update permission
+        '404':
+          description: Page not found
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Page not found
+        '500':
+          description: Internal server error
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Internal server error
+  '/users/{id}/records/{rid}':
+    delete:
+      tags:
+        - records
+      summary: Delete record
+      description: ''
+      operationId: deleteRecord
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: id of the user's record
+          required: true
+          type: string
+        - name: rid
+          in: path
+          description: id of record to delete
+          required: true
+          type: string
+      responses:
+        '204':
+          description: Successful record deletion
+        '400':
+          description: Bad request
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - 'Missing field {field_name}'
+                  - 'Wrong field type {field_name}'
+        '401':
+          description: Unauthorized
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Token has expired
+        '403':
+          description: Forbidden
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - User has no permission
+        '404':
+          description: Page not found
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Page not found
+        '500':
+          description: Internal server error
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Internal server error
+  /invitations:
+    post:
+      tags:
+        - invitations
+      summary: Create an invitation
+      description: ''
+      operationId: addInvitation
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: The user role that corresponds to the invitation
+          required: true
+          schema:
+            type: object
+            required:
+              - role
+            properties:
+              role:
+                type: string
+                enum:
+                  - user
+                  - manager
+                  - admin
+      responses:
+        '201':
+          description: Successful invitation creation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Invitations'
+        '400':
+          description: Bad request
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - 'Missing field {field_name}'
+                  - 'Wrong field type {field_name}'
+        '401':
+          description: Unauthorized
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Token has expired
+        '403':
+          description: Forbidden
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - User has no invitation permission
+        '404':
+          description: Page not found
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Page not found
+        '500':
+          description: Internal server error
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Internal server error
+  '/invitations/{id}':
+    get:
+      tags:
+        - invitations
+      summary: Validate invitation
+      description: 'If the invitation is valid, a user can be created'
+      operationId: validateInvitation
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: The id of the invitation
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Invitation successfully validated
+          schema:
+            type: string
+            enum:
+              - OK
+        '400':
+          description: Bad request
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - 'Missing field {field_name}'
+                  - 'Wrong field type {field_name}'
+        '401':
+          description: Unauthorized
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Token has expired
+        '404':
+          description: Page not found
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Invalid invitation id
+        '500':
+          description: Internal server error
+          schema:
+            type: object
+            required:
+              - error_message
+            properties:
+              error_message:
+                type: string
+                enum:
+                  - Internal server error
+definitions:
+  Users:
+    type: object
+    required:
+      - id
+      - username
+      - password
+      - working_hours_enabled
+    properties:
+      id:
+        type: string
+      username:
+        type: string
+      password:
+        type: string
+      preferred_working_hours:
+        type: integer
+      working_hours_enabled:
+        type: boolean
+        example: false
+  UserRole:
+    type: object
+    required:
+      - user_id
+      - role
+    properties:
+      user_id:
+        type: string
+      role:
+        type: string
+        enum:
+          - user
+          - manager
+          - admin
+  Records:
+    type: object
+    required:
+      - user_id
+      - date
+      - duration
+      - note
+    properties:
+      user_id:
+        type: string
+      date:
+        type: string
+        format: date-time
+      duration:
+        type: integer
+      note:
+        type: string
+  Invitations:
+    type: object
+    required:
+      - id
+      - category
+    properties:
+      id:
+        type: string
+      role:
+        type: string
+        enum:
+          - user
+          - manager
+          - admin

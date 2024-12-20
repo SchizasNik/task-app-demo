@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    /* Basic Options */
+    "target": "es6",
+    "module": "commonjs",
+    "outDir": "out",
+    "baseUrl": "src",
+    "paths": {
+      "@server/*": ["./*"]
+    },
+    "lib": ["dom", "ES2015"],
+    /* Type Checking */
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "strictNullChecks": true,
+    /* Source Map Options */
+    "inlineSourceMap": true
+  }
+}
